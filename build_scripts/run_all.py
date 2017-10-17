@@ -98,13 +98,15 @@ def main():
     parsed_args = arg_parser.parse_args()
     arg_dict = dict()
     utils_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    utils_dir = os.path.join(utils_dir, "target_pass")
+    utils_dir = os.path.join(utils_dir, "InterfaceHandlers")
+    ana_helpers = os.path.join(utils_dir, "AnalysisHelpers")
+    passes_dir = os.path.join(utils_dir, "MainAnalysisPasses/build_dir")
     # step 1: Setup common dictionary
     arg_dict['llvm_bc_out'] = parsed_args.llvm_bc_out
     if parsed_args.llvm_bc_out is None:
         usage()
     # arg_dict['dr_link_bin'] = parsed_args.dr_link_bin
-    arg_dict['dr_link_bin'] = os.path.join(utils_dir, "Dr_linker/dr_linker")
+    arg_dict['dr_link_bin'] = os.path.join(ana_helpers, "Dr_linker/dr_linker")
     arg_dict['chipset_num'] = parsed_args.chipset_num
     arg_dict['makeout'] = parsed_args.makeout
     # arg_dict['clangbin'] = parsed_args.clangbin
@@ -116,13 +118,13 @@ def main():
     arg_dict['c2xml_bin'] = get_bin_path('c2xml')
     arg_dict['kernel_src_dir'] = parsed_args.kernel_src_dir
     # arg_dict['ep_finder_bin'] = parsed_args.ep_finder_bin
-    arg_dict['ep_finder_bin'] = os.path.join(utils_dir, "EntryPointIdentifier/entry_point_handler")
+    arg_dict['ep_finder_bin'] = os.path.join(ana_helpers, "EntryPointIdentifier/entry_point_handler")
     # arg_dict['opt_bin_path'] = parsed_args.opt_bin_path
     arg_dict['opt_bin_path'] = get_bin_path('opt')
     # arg_dict['ioctl_finder_so'] = parsed_args.ioctl_finder_so
-    arg_dict['ioctl_finder_so'] = os.path.join(utils_dir, "IoctlCmdFinder/libIoctlCmdPass.so")
-    arg_dict['v4l2_config_processor_so'] = os.path.join(utils_dir, "V4L2Processor/libV4L2ProcessorPass.so")
-    arg_dict['dev_name_finder_so'] = os.path.join(utils_dir, "DeviceNameFinder/libDeviceNameFinderPass.so")
+    arg_dict['ioctl_finder_so'] = os.path.join(passes_dir, "IoctlCmdFinder/libIoctlCmdPass.so")
+    arg_dict['v4l2_config_processor_so'] = os.path.join(passes_dir, "V4L2Processor/libV4L2ProcessorPass.so")
+    arg_dict['dev_name_finder_so'] = os.path.join(passes_dir, "DeviceNameFinder/libDeviceNameFinderPass.so")
     arg_dict['ioctl_finder_out'] = parsed_args.ioctl_finder_out
     __add_temp_files(arg_dict)
 
