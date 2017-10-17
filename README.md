@@ -39,14 +39,14 @@ python setup_difuze.py -o difuze_deps
 ```
 To complete the setup you also need modifications to your local `PATH` environment variable. The setup script will give you exact changes you need to do.
 ### 1.2 Building
-This depends on the successful completion of [Setup](#markdown-header-setup).
+This depends on the successful completion of [Setup](#11-setup).
 We have a single script that builds everything, you are welcome.
 ```
 cd InterfaceHandlers
 ./build.sh
 ```
 ### 1.3 Running
-This depends on the successful completion of [Build](#markdown-header-building).
+This depends on the successful completion of [Build](#12-building).
 To run the Interface Recovery components on kernel drivers, we need to first the drivers into llvm bitcode.
 #### 1.3.1 Building kernel
 First, we need to have a buildable kernel. Which means you should be able to compile the kernel using regular build setup. i.e., `make`.
