@@ -172,6 +172,16 @@ The above command takes quite **some time (30 min - 1hr)**.
 #### 1.4.3 Understanding the output
 First, all the analysis results will be in the folder: **`~/mediatek_kernel/ioctl_finder_out` (argument given to the option `-f`)**, for each entry point a `.txt` file will be created, which contains all the information about the recovered interface.
 
+You can either give this output folder directly to the fuzzing component to start fuzzing or if you are interested in information about just the interface, We **STRONGLY RECOMMEND** to use the [`parse_interface_output.py`](https://github.com/ucsb-seclab/difuze/blob/master/helper_scripts/parse_interface_output.py) script. This script converts the crazy output of Interface Recovery pass into nice json files with a clean and consistent format.
+
+```
+cd <repo_path>/helper_scripts
+python parse_interface_output.py <ioctl_finder_out_dir> <output_directory_for_json_files>
+```
+Here `<ioctl_finder_out_dir>` should be same as the folder you provided to the `-f` option and `<output_directory_for_json_files>` is the folder where the json files should be created.
+
+You can use the corresponding json files for the interface recovery of the corresponding ioctl.
+
 #### 1.4.4 Things to note:
 ##### 1.4.4.1 Value for option `-g`
 To provide value for option `-g` you need to know the name of the `*-gcc` binary used to compile the kernel.
