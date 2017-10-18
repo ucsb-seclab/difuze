@@ -141,3 +141,56 @@ To skip: `-ske`
 This step will run the main Interface Recovery component (`IoctlCmdParser`) on all the entry points in the file `entry_point_out.txt`. The output for each entry point will be stored in the folder provided for option `-f`.
 
 To skip: `-ski`
+
+### 1.4 Example:
+Now, we will show an example from the point where you have kernel sources to the point of getting Interface Recovery results.
+
+We have uploaded a mediatek kernel [33.2.A.3.123.tar.bz2](https://drive.google.com/open?id=0B4XwT5D6qkNmLXdNTk93MjU3SWM). 
+First download and extract the above file.
+
+Lets say you extracted the above file in a folder called: `~/mediatek_kernel`
+
+#### 1.4.1 Building
+```
+cd ~/mediatek_kernel
+source ./env.sh
+cd kernel-3.18
+# the following step may not be needed depending on the kernel
+mkdir out
+make O=out ARCH=arm64 tubads_defconfig
+# this following command copies all the compilation commands to makeout.txt
+make V=1 -j8 O=out ARCH=arm64 > makeout.txt 2>&1
+```
+#### 1.4.2 Running Interface Recovery
+```
+cd <repo_path>/build_scripts
+
+python run_all.py -l ~/mediatek_kernel/llvm_bitcode_out -a 1 -m ~/mediatek_kernel/kernel-3.18/makeout.txt -g aarch64-linux-android-gcc -n 2 -o ~/mediatek_kernel/kernel-3.18/out -k ~/mediatek_kernel/kernel-3.18 -f ~/mediatek_kernel/ioctl_finder_out
+```
+The above command takes quite **some time (30 min - 1hr)**.
+
+#### 1.4.3 Understanding the output
+First, all the analysis results will be in the folder: **`~/mediatek_kernel/ioctl_finder_out` (argument given to the option `-f`)**, for each entry point a `.txt` file will be created, which contains all the information about the recovered interface.
+
+#### 1.4.4 Things to note:
+##### 1.4.4.1 Value for option `-g`
+To provide value for option `-g` you need to know the name of the `*-gcc` binary used to compile the kernel.
+An easy way to know this would be to `grep` for `gcc` in `makeout.txt` and you will see compiler commands from which you can know the `*-gcc` binary name.
+
+For our example above, if you do `grep gcc makeout.txt` for the example build, you will see lot of lines like below:
+```
+aarch64-linux-android-gcc -Wp,-MD,fs/jbd2/.transaction.o.d  -nostdinc -isystem ...
+```
+So, the value for `-g` should be `aarch64-linux-android-gcc`. 
+
+If the kernel to be built is 32-bit then the binary most likely will be `arm-eabi-gcc`
+
+For Qualcomm (or msm) chipsets, you may see `*gcc-wrapper.py` instead of `*.gcc`, in which case you should provide the `*gcc-wrapper.py`.
+
+##### 1.4.4.2 Value for option `-a`
+Depeding on the chipset type, you need to provide corresponding number.
+
+##### 1.4.4.3 Value for option `-o`
+This is the path of the folder provided to the option `O=` for `make` command during kernel build.
+
+Not all kernels need a separate out path. You may build kernel by not providing an option `O`, in which case you SHOULD NOT provide value for that option while running `run_all.py`.
