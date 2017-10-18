@@ -122,13 +122,10 @@ def _run_ioctl_cmd_parser(combined_arg):
         log_error("LLVM mem2reg failed on:", llvm_bc_file, " for function:", func_name,
                   ", So the output you get may be wrong.")
 
-    # Old ioctl cmd parser
-    '''ret_val = os.system(opt_bin_path + " -analyze -debug -load " + so_path + ' -ioctl-cmd-parser -toCheckFunction=\"' +
-                        str(func_name) + '\" ' + bc_file_name + ' > ' + output_file + ' 2>&1')'''
     ret_val = os.system(opt_bin_path + " -analyze -debug -load " + so_path + ' -v4l2-processor -ioctlFunction=\"' +
                         str(func_name) + '\" -bcOutDir=\"' + llvm_bc_out + '\" -srcBaseDir=\"' + kernel_src_dir +
                         '\" -v4l2indexconfig=\"' + v4l2_id_cmd_out + '\" -funcIndex=' + target_v4l2_func_index + ' ' +
-                        bc_file_name + ' > ' + output_file + ' 2>&1')
+                        bc_file_name + ' >> ' + output_file + ' 2>&1')
     return ret_val, func_name
 
 

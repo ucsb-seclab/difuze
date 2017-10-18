@@ -208,5 +208,6 @@ def __add_temp_files(target_dict):
     target_dict['v4l2_func_list'] = os.path.join(target_dict['llvm_bc_out'], 'v4l2_func_config.txt')
     target_dict['v4l2_id_cmd_out'] = os.path.join(target_dict['llvm_bc_out'], 'v4l2_id_cmd_config.txt')
 
+
 if __name__ == "__main__":
     main()
