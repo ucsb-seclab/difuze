@@ -105,21 +105,21 @@ def parse_device_info(all_lines, ep_object):
         target_dev_name = None
         for curr_l in target_lines:
             if curr_l.startswith('[+] Device Type:'):
-                target_dev_type = curr_l.split('[+] Device Type:')[0].strip()
+                target_dev_type = curr_l.split('[+] Device Type:')[-1].strip()
             if curr_l.startswith('[+] V4L2 Device:'):
-                tmp_dev_name = curr_l.split('[+] V4L2 Device:')[0].strip()
+                tmp_dev_name = curr_l.split('[+] V4L2 Device:')[-1].strip()
                 if target_dev_name is not None:
                     target_dev_name += ", dev_name:" + tmp_dev_name
                 else:
                     target_dev_name = tmp_dev_name
             if curr_l.startswith('[+] Look into:'):
-                tmp_dev_name = curr_l.split('[+] Look into:')[0].strip()
+                tmp_dev_name = curr_l.split('[+] Look into:')[-1].strip()
                 if target_dev_name is not None:
                     target_dev_name += ", dynamic_info:" + tmp_dev_name
                 else:
                     target_dev_name = tmp_dev_name
             if curr_l.startswith('[+] Device Name:'):
-                target_dev_name = curr_l.split('[+] Device Name:')[0].strip()
+                target_dev_name = curr_l.split('[+] Device Name:')[-1].strip()
         if target_dev_type is None:
             log_warning("Unable to find device type.")
         else:
@@ -187,7 +187,7 @@ def parse_field_constraints(curr_idx, all_lines):
             if curr_line.startswith("POSSIBLE VALUES"):
                 curr_idx += 1
                 pass
-            elif 'VALUE' in curr_line:
+            elif 'VALUE' in curr_line or 'Value' in curr_line:
                 target_val = curr_line.split(":")[-1]
                 possible_values.append(target_val)
                 curr_idx += 1
