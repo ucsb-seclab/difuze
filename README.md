@@ -22,7 +22,7 @@ sudo apt-get install libxml2-dev
 
 Next, We have created a single script, which downloads and builds all the required tools.
 ```
-cd build_scripts
+cd helper_scripts
 python setup_difuze.py --help
 usage: setup_difuze.py [-h] [-b TARGET_BRANCH] [-o OUTPUT_FOLDER]
 
@@ -62,10 +62,10 @@ make V=1 O=out ARCH=arm64 > makeout.txt 2>&1
 
 That's it. Next, in the following step our script takes the generated `makeout.txt` and run the Interface Recovery on all the recognized drivers.
 #### 1.3.2 Running Interface Recovery analysis
-All the various steps of Interface Recovery are wrapped in a single script `build_scripts/run_all.py`
+All the various steps of Interface Recovery are wrapped in a single script `helper_scripts/run_all.py`
 How to run:
 ```
-cd build_scripts
+cd helper_scripts
 python run_all.py --help
 
 usage: run_all.py [-h] [-l LLVM_BC_OUT] [-a CHIPSET_NUM] [-m MAKEOUT]
@@ -163,7 +163,7 @@ make V=1 -j8 O=out ARCH=arm64 > makeout.txt 2>&1
 ```
 #### 1.4.2 Running Interface Recovery
 ```
-cd <repo_path>/build_scripts
+cd <repo_path>/helper_scripts
 
 python run_all.py -l ~/mediatek_kernel/llvm_bitcode_out -a 1 -m ~/mediatek_kernel/kernel-3.18/makeout.txt -g aarch64-linux-android-gcc -n 2 -o ~/mediatek_kernel/kernel-3.18/out -k ~/mediatek_kernel/kernel-3.18 -f ~/mediatek_kernel/ioctl_finder_out
 ```
