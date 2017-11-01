@@ -1,0 +1,7 @@
+<jay_partial_pit name="generic">
+
+	<DataModel byte_size="8" name="foo" type="struct">
+		<Number name="my_int64" size="64"/>
+	</DataModel>
+
+</jay_partial_pit>

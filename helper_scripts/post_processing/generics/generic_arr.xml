@@ -1,0 +1,9 @@
+<jay_partial_pit name="generic">
+
+	<DataModel byte_size="1024" name="foo" type="struct">
+		<Block elem_size="4" maxOccurs="256" minOccurs="256" name="my_arr" offset="0">
+			<Number name="arr_ele" size="32"/>
+		</Block>
+	</DataModel>
+
+</jay_partial_pit>
