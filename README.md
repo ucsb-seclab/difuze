@@ -204,3 +204,39 @@ Depeding on the chipset type, you need to provide corresponding number.
 This is the path of the folder provided to the option `O=` for `make` command during kernel build.
 
 Not all kernels need a separate out path. You may build kernel by not providing an option `O`, in which case you SHOULD NOT provide value for that option while running `run_all.py`.
+
+### 1.5 Post Processing
+Before we can begin fuzzing we need to process the output a bit with our very much research quality (sorry) parsers.
+
+These are found [here](helper_scripts/post_processing). The main script to run will be `run_all.py`:
+```
+$ python run_all.py --help
+usage: run_all.py [-h] -f F -o O [-n {manual,auto,hybrid}] [-m M]
+
+run_all options
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f F                  Filename of the ioctl analysis output OR the entire
+                        output directory created by the system
+  -o O                  Output directory to store the results. If this
+                        directory does not exist it will be created
+  -n {manual,auto,hybrid}
+                        Specify devname options. You can choose manual
+                        (specify ever name manually), auto (skip anything that
+                        we don't identify a name for), or hybrid (if we
+                        detected a name, we use it, else we ask the user)
+  -m M                  Enable multi-device output most ioctls only have one
+                        applicable device node, but some may have multiple. (0
+                        to disable)
+```
+You'll want to pass `-f` the output directory of the ioctl analysis e.g. `~/mediatek_kernel/ioctl_finder_out`.
+
+`-o` Is where you where to store the post-processed results. These will be easily digestible XML files (jpits).
+
+`-n` Specifies the system to what degree you want to rely on our device name recovery.
+If you don't want to do any work/name hunting, you can specify `auto`.
+This of course comes at the cost of skipping any device for which we don't recover a name. If you want to be paranoid and not trust any of our recovery efforts (totally reasonable) you can use the `manual` option to name every single device yourself.
+`hybrid` then is a combination of both -- we will name the device for you when we can, and fall back to you when we've failed.
+
+`-m` Sometimes ioctls can correspond to more than one device (this is common with v4l2/subdev ioctls for example). Support for this in enabled by default, but it requires user interaction to specify the numberof devices for each device. If this is too annoying for you, you can disable the prompt by passing `-m 0` (we will assume a single device for each ioctl).
