@@ -172,7 +172,7 @@ The above command takes quite **some time (30 min - 1hr)**.
 #### 1.4.3 Understanding the output
 First, all the analysis results will be in the folder: **`~/mediatek_kernel/ioctl_finder_out` (argument given to the option `-f`)**, for each entry point a `.txt` file will be created, which contains all the information about the recovered interface.
 
-You can either give this output folder directly to the fuzzing component to start fuzzing or if you are interested in information about just the interface, We **STRONGLY RECOMMEND** to use the [`parse_interface_output.py`](https://github.com/ucsb-seclab/difuze/blob/master/helper_scripts/parse_interface_output.py) script. This script converts the crazy output of Interface Recovery pass into nice json files with a clean and consistent format.
+If you are interested in information about just the interface and don't care about anything else, We recommend you use the [`parse_interface_output.py`](https://github.com/ucsb-seclab/difuze/blob/master/helper_scripts/parse_interface_output.py) script. This script converts the crazy output of Interface Recovery pass into nice json files with a clean and consistent format.
 
 ```
 cd <repo_path>/helper_scripts
@@ -223,7 +223,7 @@ optional arguments:
                         directory does not exist it will be created
   -n {manual,auto,hybrid}
                         Specify devname options. You can choose manual
-                        (specify ever name manually), auto (skip anything that
+                        (specify every name manually), auto (skip anything that
                         we don't identify a name for), or hybrid (if we
                         detected a name, we use it, else we ask the user)
   -m M                  Enable multi-device output most ioctls only have one
@@ -239,4 +239,35 @@ If you don't want to do any work/name hunting, you can specify `auto`.
 This of course comes at the cost of skipping any device for which we don't recover a name. If you want to be paranoid and not trust any of our recovery efforts (totally reasonable) you can use the `manual` option to name every single device yourself.
 `hybrid` then is a combination of both -- we will name the device for you when we can, and fall back to you when we've failed.
 
-`-m` Sometimes ioctls can correspond to more than one device (this is common with v4l2/subdev ioctls for example). Support for this in enabled by default, but it requires user interaction to specify the number of devices for each ioctl. If this is too annoying for you, you can disable the prompt by passing `-m 0` (we will assume a single device for each ioctl).
+`-m` Sometimes ioctls can correspond to more than one device (this is common with v4l2/subdev ioctls for example). Support for this in enabled by default, but it requires user interaction to specify the numberof devices for each device. If this is too annoying for you, you can disable the prompt by passing `-m 0` (we will assume a single device for each ioctl).
+
+After running, you should have, in your out folder, a folder for each ioctl.
+
+## 2 Fuzzing
+
+### 2.1 Mango Fuzz
+MangoFuzz is our simple prototype fuzzer and is based off of Peach (specifically [MozPeach](https://github.com/MozillaSecurity/peach)).
+
+It's not a particularly sophisticated fuzzer but it does find bugs.
+It was also built to be easily expandable.
+There are 2 components to this fuzzer, the fuzz engine and the executor.
+The executor can be found [here](MangoFuzz/executor), and the fuzz engine can be found [here](MangoFuzz/fuzzer).
+
+#### 2.1.1 Executor
+The executor runs on the phone, listening for data that the fuzz engine will send to it.
+
+Simply compile it for your phones architecture, `adb push` it on to the phone, and execute with the port you want it to listen on!
+
+#### 2.1.2 Fuzz Engine
+Interfacing with MangoFuzz is fairly simple. You'll want an `Engine` object and a `Parser` object, which you'll feed your engine into.
+From here, you parse jpits with your Parser, and then run the Engine. Easy!
+We've provided some simple run scripts to get you started.
+
+To run against specific drivers you can use `runner.py` on one of the ioctl folders in the output directory (created by our post processing scripts).
+
+e.g. `./runner.py -f honor8/out/chb -num 1000`. This tells MangoFuzz to run for 1000 iterations against all ioctl command value pairs pertaining to the `chb` ioctl/driver.
+
+If instead we want to run against an entire device (phone), you can use `dev_runner.py`. e.g. `./dev_runner.py -f honor8/out -num 100`.
+This will continue looping over the driver files, randomly switching between them for 100 iterations each.
+
+Note that before the fuzz engine can communicate with the phone, you'll need to use ADB to set up port forwarding e.g. `adb forward tcp:2022 tcp:2022`

@@ -387,7 +387,7 @@ def main():
     parser = argparse.ArgumentParser(description="run_all options")
     parser.add_argument('-f', type=str, help="Filename of the ioctl analysis output OR the entire output directory created by the system", required=True)
     parser.add_argument('-o', type=str, help="Output directory to store the results. If this directory does not exist it will be created", required=True)
-    parser.add_argument('-n', type=str, help="Specify devname options. You can choose manual (specify ever name manually), auto (skip anything that we don't identify a name for), or hybrid (if we detected a name, we use it, else we ask the user)", default="manual", choices=['manual', 'auto', 'hybrid'])
+    parser.add_argument('-n', type=str, help="Specify devname options. You can choose manual (specify every name manually), auto (skip anything that we don't identify a name for), or hybrid (if we detected a name, we use it, else we ask the user)", default="manual", choices=['manual', 'auto', 'hybrid'])
     parser.add_argument('-m', type=int, help="Enable multi-device output most ioctls only have one applicable device node, but some may have multiple. (0 to disable)", default=1)
     args = parser.parse_args()
     path = args.f
