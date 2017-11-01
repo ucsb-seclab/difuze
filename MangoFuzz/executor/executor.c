@@ -117,6 +117,10 @@ int main(int argc , char *argv[])
 	int default_weight = 50;
 	populate_arrs(top);
 	int retest = 0;
+	if (argc != 2) {
+		printf("Usage: %s <port>\n", argv[0]);
+		return -1;
+	}
 	if (argc > 2) {
 		retest = 1;
 		goto rerun;
@@ -135,7 +139,7 @@ int main(int argc , char *argv[])
 	 
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;
-	server.sin_port = htons( 2022 );
+	server.sin_port = htons( argv[1] );
 
 	//Bind
 	if( bind(sockfd,(struct sockaddr *)&server , sizeof(server)) < 0)

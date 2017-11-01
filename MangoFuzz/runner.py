@@ -14,9 +14,7 @@ def main():
 	parser.add_argument('-seed', type=int, help="Seed. Default will be time", default=None)
 	parser.add_argument('-num', type=int, help="Number of tests to run (if limited). Default is to simply keep running.", default=None)
 	parser.add_argument('-a', type=str, help="Address to send the data to. Default is localhost", default='localhost')
-	parser.add_argument('-p', type=str, help="Port to send the data to. Default is 2022", default='2022')
-	parser.add_argument('-dm', type=bool, help="Specify driver mode. Default is false", default=False)
-	parser.add_argument('-ts', type=int, help="Specify time switch between drivers", default=None)
+	parser.add_argument('-port', type=str, help="Port to send the data to. Default is 2022", default='2022')
 
 	args = parser.parse_args()
 	
@@ -24,7 +22,7 @@ def main():
 	jtype = args.j
 	num_tests = args.num
 	addr = args.a
-	port = args.p
+	port = args.port
 	seed = args.seed
 	
 	mango = Engine(seed)
