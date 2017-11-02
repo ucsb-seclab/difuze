@@ -7,7 +7,7 @@ This repo contains all the sources (including setup scripts), you need to get `d
 ### Tested on
 Ubuntu >= 14.04.5 LTS
 
-As explained in our paper, There are two main components of `difuze`: **Interface Recovery** and **Fuzzing Engine**
+As explained in our [paper](https://acmccs.github.io/papers/p2123-corinaA.pdf), There are two main components of `difuze`: **Interface Recovery** and **Fuzzing Engine**
 
 ## 1. Interface Recovery
 The Interface recovery mechanism is based on LLVM analysis passes. Every step of interface recovery are written as  individual passes. Follow the below instructions on how to get the *Interface Recovery* up and running.
