@@ -139,7 +139,7 @@ int main(int argc , char *argv[])
 	 
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;
-	server.sin_port = htons( argv[1] );
+	server.sin_port = htons(atoi(argv[1]));
 
 	//Bind
 	if( bind(sockfd,(struct sockaddr *)&server , sizeof(server)) < 0)
