@@ -18,6 +18,7 @@ This step takes care of installing LLVM and `c2xml`:
 First, make sure that you have libxml (required for c2xml):
 ```
 sudo apt-get install libxml2-dev
+sudo pip install lxml
 ```
 
 Next, We have created a single script, which downloads and builds all the required tools.
