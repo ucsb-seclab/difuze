@@ -7,6 +7,9 @@ This repo contains all the sources (including setup scripts), you need to get `d
 ### Tested on
 Ubuntu >= 14.04.5 LTS
 
+### 0. Running difuze from Docker
+Refer the [readme](https://github.com/ucsb-seclab/difuze/blob/master/DOCKER.md)
+
 As explained in our [paper](https://acmccs.github.io/papers/p2123-corinaA.pdf), There are two main components of `difuze`: **Interface Recovery** and **Fuzzing Engine**
 
 ## 1. Interface Recovery
