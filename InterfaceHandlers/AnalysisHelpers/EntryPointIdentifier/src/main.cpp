@@ -199,8 +199,6 @@ void process_device_attribute_st(GlobalVariable *currGlobal, FILE *outputFile) {
         Constant *targetConstant = currGlobal->getInitializer();
         ConstantStruct *actualStType = dyn_cast<ConstantStruct>(targetConstant);
         if(actualStType != nullptr) {
-            Value *currFieldVal;
-            Function *targetFunction;
             if (actualStType->getNumOperands() > 1) {
                 // dev show: 1
                 printFuncVal(actualStType->getOperand(1), outputFile, DEVATTR_SHOW);
@@ -231,7 +229,6 @@ void process_file_operations_st(GlobalVariable *currGlobal, FILE *outputFile) {
         bool ioctl_found = false, ioctl_found2 = false;
         if(actualStType != nullptr) {
             Value *currFieldVal;
-            Function *targetFunction;
 
             // read: 2
             if (actualStType->getNumOperands() > 2) {
@@ -254,7 +251,7 @@ void process_file_operations_st(GlobalVariable *currGlobal, FILE *outputFile) {
             }
             
             // ioctl function identification heuristic
-            if(!ioctl_found || ioctl_found2) {
+            if(!ioctl_found || !ioctl_found2) {
                 unsigned int idx=0;
                 std::string ioctlEnd = "_ioctl";
                 for(idx=0; idx<actualStType->getNumOperands(); idx++) {
@@ -264,7 +261,7 @@ void process_file_operations_st(GlobalVariable *currGlobal, FILE *outputFile) {
                     currFieldVal = actualStType->getOperand(idx);
                     Function *targetFunction = dyn_cast<Function>(currFieldVal->stripPointerCasts());
                     if(targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName() && ends_with(targetFunction->getName().str(), ioctlEnd)) {
-                        fprintf(outputFile, "%s:%s\n", IOCTL_HDR, targetFunction->getName().str().c_str());
+                        printTriFuncVal(currFieldVal, outputFile, IOCTL_HDR);
                     }
                 }
             }
@@ -315,8 +312,6 @@ void process_v4l2_file_ops_st(GlobalVariable *currGlobal, FILE *outputFile) {
         Constant *targetConstant = currGlobal->getInitializer();
         ConstantStruct *actualStType = dyn_cast<ConstantStruct>(targetConstant);
         if(actualStType != nullptr) {
-            Value *currFieldVal;
-            Function *targetFunction;
             // read: 1
             if (actualStType->getNumOperands() > 1) {
                 printFuncVal(actualStType->getOperand(1), outputFile, READ_HDR);
