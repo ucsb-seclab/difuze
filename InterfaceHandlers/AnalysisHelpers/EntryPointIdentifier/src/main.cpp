@@ -156,6 +156,26 @@ std::string getFunctionFileName(Function *targetFunc) {
     return targetFName;
 }
 
+
+bool printFuncVal(Value *currVal, FILE *outputFile, const char *hdr_str) {
+    Function *targetFunction = dyn_cast<Function>(currVal->stripPointerCasts());
+    if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
+        fprintf(outputFile, "%s:%s\n", hdr_str, targetFunction->getName().str().c_str());
+        return true;
+    }
+    return false;
+}
+
+bool printTriFuncVal(Value *currVal, FILE *outputFile, const char *hdr_str) {
+    Function *targetFunction = dyn_cast<Function>(currVal->stripPointerCasts());
+    if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
+        fprintf(outputFile, "%s:%s:%s\n", hdr_str, targetFunction->getName().str().c_str(),
+                            getFunctionFileName(targetFunction).c_str());
+        return true;
+    }
+    return false;
+}
+
 void process_netdev_st(GlobalVariable *currGlobal, FILE *outputFile) {
 
     if(currGlobal->hasInitializer()) {
@@ -165,12 +185,7 @@ void process_netdev_st(GlobalVariable *currGlobal, FILE *outputFile) {
         if(actualStType != nullptr) {
             // net device ioctl: 10
             if (actualStType->getNumOperands() > 10) {
-                Value *currFieldVal = actualStType->getOperand(10);
-                Function *targetFunction = dyn_cast<Function>(currFieldVal);
-
-                if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
-                    fprintf(outputFile, "%s:%s\n", NETDEV_IOCTL, targetFunction->getName().str().c_str());
-                }
+                printFuncVal(actualStType->getOperand(10), outputFile, NETDEV_IOCTL);
             }
         }
     }
@@ -188,25 +203,22 @@ void process_device_attribute_st(GlobalVariable *currGlobal, FILE *outputFile) {
             Function *targetFunction;
             if (actualStType->getNumOperands() > 1) {
                 // dev show: 1
-                currFieldVal = actualStType->getOperand(1);
-                targetFunction = dyn_cast<Function>(currFieldVal);
-
-                if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
-                    fprintf(outputFile, "%s:%s\n", DEVATTR_SHOW, targetFunction->getName().str().c_str());
-                }
+                printFuncVal(actualStType->getOperand(1), outputFile, DEVATTR_SHOW);
             }
 
             if (actualStType->getNumOperands() > 2) {
                 // dev store : 2
-                currFieldVal = actualStType->getOperand(2);
-                targetFunction = dyn_cast<Function>(currFieldVal);
-                if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
-                    fprintf(outputFile, "%s:%s\n", DEVATTR_STORE, targetFunction->getName().str().c_str());
-                }
+                printFuncVal(actualStType->getOperand(2), outputFile, DEVATTR_STORE);
             }
         }
 
     }
+}
+
+inline bool ends_with(std::string const &value, std::string const &ending)
+{
+    if (ending.size() > value.size()) return false;
+    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
 void process_file_operations_st(GlobalVariable *currGlobal, FILE *outputFile) {
@@ -216,46 +228,44 @@ void process_file_operations_st(GlobalVariable *currGlobal, FILE *outputFile) {
         // get the initializer.
         Constant *targetConstant = currGlobal->getInitializer();
         ConstantStruct *actualStType = dyn_cast<ConstantStruct>(targetConstant);
+        bool ioctl_found = false, ioctl_found2 = false;
         if(actualStType != nullptr) {
             Value *currFieldVal;
             Function *targetFunction;
 
             // read: 2
             if (actualStType->getNumOperands() > 2) {
-                currFieldVal = actualStType->getOperand(2);
-                targetFunction = dyn_cast<Function>(currFieldVal);
-
-                if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
-                    fprintf(outputFile, "%s:%s\n", READ_HDR, targetFunction->getName().str().c_str());
-                }
+                printFuncVal(actualStType->getOperand(2), outputFile, READ_HDR);
             }
 
             // write: 3
             if (actualStType->getNumOperands() > 3) {
-                currFieldVal = actualStType->getOperand(3);
-                targetFunction = dyn_cast<Function>(currFieldVal);
-                if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
-                    fprintf(outputFile, "%s:%s\n", WRITE_HDR, targetFunction->getName().str().c_str());
-                }
+                printFuncVal(actualStType->getOperand(3), outputFile, WRITE_HDR);
             }
 
             // ioctl : 10
             if (actualStType->getNumOperands() > 10) {
-                currFieldVal = actualStType->getOperand(10);
-                targetFunction = dyn_cast<Function>(currFieldVal);
-                if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
-                    fprintf(outputFile, "%s:%s:%s\n", IOCTL_HDR, targetFunction->getName().str().c_str(),
-                            getFunctionFileName(targetFunction).c_str());
-                }
+                ioctl_found = printTriFuncVal(actualStType->getOperand(10), outputFile, IOCTL_HDR);
             }
 
             // ioctl : 10
             if (actualStType->getNumOperands() > 8) {
-                currFieldVal = actualStType->getOperand(8);
-                targetFunction = dyn_cast<Function>(currFieldVal);
-                if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
-                    fprintf(outputFile, "%s:%s:%s\n", IOCTL_HDR, targetFunction->getName().str().c_str(),
-                            getFunctionFileName(targetFunction).c_str());
+                ioctl_found2 = printTriFuncVal(actualStType->getOperand(8), outputFile, IOCTL_HDR);
+            }
+            
+            // ioctl function identification heuristic
+            if(!ioctl_found || ioctl_found2) {
+                unsigned int idx=0;
+                std::string ioctlEnd = "_ioctl";
+                for(idx=0; idx<actualStType->getNumOperands(); idx++) {
+                    if(idx == 10 || idx == 8) {
+                        continue;
+                    }
+                    currFieldVal = actualStType->getOperand(idx);
+                    Function *targetFunction = dyn_cast<Function>(currFieldVal->stripPointerCasts());
+                    if(targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName() && ends_with(targetFunction->hasName().str(), ioctlEnd)) {
+                        fprintf(outputFile, "%s:%s\n", IOCTL_HDR, targetFunction->getName().str().c_str());
+                    }
                 }
             }
         }
@@ -271,13 +281,7 @@ void process_snd_pcm_ops_st(GlobalVariable *currGlobal, FILE *outputFile) {
         if(actualStType != nullptr) {
             if (actualStType->getNumOperands() > 2) {
                 // ioctl: 2
-                Value *currFieldVal = actualStType->getOperand(2);
-                Function *targetFunction = dyn_cast<Function>(currFieldVal);
-
-                if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
-                    fprintf(outputFile, "%s:%s:%s\n", IOCTL_HDR, targetFunction->getName().str().c_str(),
-                            getFunctionFileName(targetFunction).c_str());
-                }
+                printTriFuncVal(actualStType->getOperand(2), outputFile, IOCTL_HDR);
             }
         }
 
@@ -315,21 +319,12 @@ void process_v4l2_file_ops_st(GlobalVariable *currGlobal, FILE *outputFile) {
             Function *targetFunction;
             // read: 1
             if (actualStType->getNumOperands() > 1) {
-                currFieldVal = actualStType->getOperand(1);
-                targetFunction = dyn_cast<Function>(currFieldVal);
-
-                if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
-                    fprintf(outputFile, "%s:%s\n", READ_HDR, targetFunction->getName().str().c_str());
-                }
+                printFuncVal(actualStType->getOperand(1), outputFile, READ_HDR);
             }
 
             // write: 2
             if (actualStType->getNumOperands() > 2) {
-                currFieldVal = actualStType->getOperand(2);
-                targetFunction = dyn_cast<Function>(currFieldVal);
-                if (targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName()) {
-                    fprintf(outputFile, "%s:%s\n", WRITE_HDR, targetFunction->getName().str().c_str());
-                }
+                printFuncVal(actualStType->getOperand(2), outputFile, WRITE_HDR);
             }
         }
 
