@@ -263,7 +263,7 @@ void process_file_operations_st(GlobalVariable *currGlobal, FILE *outputFile) {
                     }
                     currFieldVal = actualStType->getOperand(idx);
                     Function *targetFunction = dyn_cast<Function>(currFieldVal->stripPointerCasts());
-                    if(targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName() && ends_with(targetFunction->hasName().str(), ioctlEnd)) {
+                    if(targetFunction != nullptr && !targetFunction->isDeclaration() && targetFunction->hasName() && ends_with(targetFunction->getName().str(), ioctlEnd)) {
                         fprintf(outputFile, "%s:%s\n", IOCTL_HDR, targetFunction->getName().str().c_str());
                     }
                 }
