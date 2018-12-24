@@ -391,16 +391,16 @@ def main():
     parser.add_argument('-m', type=int, help="Enable multi-device output most ioctls only have one applicable device node, but some may have multiple. (0 to disable)", default=1)
     args = parser.parse_args()
     path = args.f
-    out_dir = args.o
+    out_dir = os.path.abspath(args.o)
     name_mode = args.n
     multi_dev = args.m
 
     if out_dir[-1] != '/':
         out_dir = out_dir + '/'
 
-    if os.path.exists(os.path.abspath(out_dir)) == False:
+    if os.path.exists(out_dir) == False:
         print "[+] Creating your out directory for you"
-        os.mkdir(os.path.abspath(out_dir))
+        os.mkdir(out_dir)
 
     if os.path.isfile(path) == False:
         files = my_listdir(path)
@@ -422,10 +422,9 @@ def main():
         records, pre_proc_files, ioctl_name = algo(fname)
 
         if len(records) > 0:
-            cwd = os.path.abspath('.')
 
             # check if device path exists
-            if os.path.exists(cwd + '/' + out_dir + ioctl_name) == False:
+            if not os.path.exists(out_dir + ioctl_name):
                 os.mkdir(out_dir + ioctl_name)
             else:
                 print "[!] Skipping %s. out file exists" % ioctl_name
