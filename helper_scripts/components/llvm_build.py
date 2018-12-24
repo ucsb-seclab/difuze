@@ -71,7 +71,7 @@ class LLVMBuild(Component):
 INVALID_GCC_FLAGS = ['-mno-thumb-interwork', '-fconserve-stack', '-fno-var-tracking-assignments',
                      '-fno-delete-null-pointer-checks', '--param=allow-store-data-races=0',
                      '-Wno-unused-but-set-variable', '-Werror=frame-larger-than=1', '-Werror', '-Wall',
-                     '-fno-jump-tables', '-nostdinc', '-mpc-relative-literal-loads']
+                     '-fno-jump-tables', '-nostdinc', '-mpc-relative-literal-loads', '-mabi=lp64']
 # target optimization to be used for llvm
 TARGET_OPTIMIZATION_FLAGS = ['-O0']
 # debug flags to be used by llvm
