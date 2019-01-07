@@ -13,9 +13,16 @@ You need to give access to the `usb` devices to allow `adb` (from the docker con
 
 ## Using the docker image
 ### Building a kernel
-1. Mount the kernel folder while running docker using `-v` command.
+1. Mount the kernel folder while running docker using `-v` command; do git pull and build all the sources.
 ```
 docker run -i -t --privileged -v /dev/bus/usb:/dev/bus/usb machiry/difuzecommon -v <path_on_host_machine>:<path_in_docker> /bin/bash
+
+// inside the docker container
+# cd /difuze/repo
+# git pull
+# cd InterfaceHandlers
+# ./build.sh
+
 ```
 Example:
 ```
