@@ -111,6 +111,7 @@ def main():
     arg_dict['makeout'] = parsed_args.makeout
     # arg_dict['clangbin'] = parsed_args.clangbin
     arg_dict['clangbin'] = get_bin_path('clang')
+    arg_dict['llvmlinkbin'] = get_bin_path('llvm-link')
     arg_dict['compiler_name'] = parsed_args.compiler_name
     arg_dict['arch_num'] = parsed_args.arch_num
     arg_dict['out'] = parsed_args.out
