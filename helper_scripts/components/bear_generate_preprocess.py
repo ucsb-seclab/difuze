@@ -10,23 +10,17 @@ class BearGeneratePreprocessed(Component):
         compilation command.
     """
     def __init__(self, value_dict):
-        makeout_file = None
         clang_bin = None
         llvm_link_bin = None
         llvm_bc_out = None
-        compiler_name = None
         arch_num = None
         separate_out = None
         compile_json = None
         kernel_src_dir = ""
-        if 'makeout' in value_dict:
-            makeout_file = value_dict['makeout']
         if 'clangbin' in value_dict:
             clang_bin = value_dict['clangbin']
         if 'llvm_bc_out' in value_dict:
             llvm_bc_out = value_dict['llvm_bc_out']
-        if 'compiler_name' in value_dict:
-            compiler_name = value_dict['compiler_name']
         if 'arch_num' in value_dict:
             arch_num = value_dict['arch_num']
         if 'out' in value_dict:
@@ -38,10 +32,8 @@ class BearGeneratePreprocessed(Component):
         if 'llvmlinkbin' in value_dict:
             llvm_link_bin = value_dict["llvmlinkbin"]
 
-        self.curr_makeout = makeout_file
         self.clang_bin = clang_bin
         self.llvm_bc_out = llvm_bc_out
-        self.gcc_name = compiler_name
         self.arch_num = arch_num
         self.separate_out = separate_out
         self.kernel_src_dir = kernel_src_dir
@@ -49,10 +41,9 @@ class BearGeneratePreprocessed(Component):
         self.llvm_link_bin = llvm_link_bin
 
     def setup(self):
-        if (not os.path.exists(self.curr_makeout)) or \
-                (not os.path.exists(self.clang_bin)) or (not os.path.exists(self.llvm_link_bin)):
-            return "Required files(" + str(self.curr_makeout) + ", " + str(self.clang_bin) + \
-                   ", " + str(self.llvm_link_bin)  + ") do not exist"
+        if (not os.path.exists(self.clang_bin)) or (not os.path.exists(self.llvm_link_bin)):
+            return "Required files(" + ", " + str(self.clang_bin) + \
+                   ", " + str(self.llvm_link_bin) + ") do not exist"
         if self.llvm_bc_out is not None:
             if not os.path.exists(self.llvm_bc_out):
                 os.makedirs(self.llvm_bc_out)
@@ -60,8 +51,6 @@ class BearGeneratePreprocessed(Component):
                 return "Provided LLVM Bitcode out:" + self.llvm_bc_out + " is a file, but should be a directory path."
         else:
             return "LLVM Bitcode out should be provided."
-        if self.gcc_name is None:
-            return "No compiler name specified, this is needed to filter compilation lines"
         if self.arch_num is None:
             return "No architecture number provided."
         if self.compile_json is None or not os.path.exists(self.compile_json):
@@ -82,6 +71,8 @@ class BearGeneratePreprocessed(Component):
 
 # UTILITIES FUNCTION
 # These flags should be removed from gcc cmdline
+
+
 INVALID_GCC_FLAGS = ['-mno-thumb-interwork', '-fconserve-stack', '-fno-var-tracking-assignments',
                      '-fno-delete-null-pointer-checks', '--param=allow-store-data-races=0',
                      '-Wno-unused-but-set-variable', '-Werror=frame-larger-than=1', '-Werror', '-Wall',

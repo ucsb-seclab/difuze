@@ -12,5 +12,10 @@ from generate_preprocess import *
 from parse_v4l2_header import *
 from v4l2_cmd_finder import *
 from dev_name_finder import *
-
+from bear_entry_point_identifier import *
+from bear_generate_preprocess import *
+from bear_llvm_build import *
+from bear_parse_v4l2_header import *
+from bear_generate_includes import *
+from bear_parse_headers import *
 
