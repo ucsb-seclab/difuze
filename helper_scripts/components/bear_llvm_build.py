@@ -2,6 +2,7 @@ from base_component import *
 import os
 from multiprocessing import Pool, cpu_count
 from bear_helper import parse_compile_json
+from bear_build_helper import *
 
 
 class BearLLVMBuild(Component):
@@ -68,59 +69,6 @@ class BearLLVMBuild(Component):
         # Yes, this component is critical.
         return True
 
-# UTILITIES FUNCTION
-# These flags should be removed from gcc cmdline
-
-
-INVALID_GCC_FLAGS = ['-mno-thumb-interwork', '-fconserve-stack', '-fno-var-tracking-assignments',
-                     '-fno-delete-null-pointer-checks', '--param=allow-store-data-races=0',
-                     '-Wno-unused-but-set-variable', '-Werror=frame-larger-than=1', '-Werror', '-Wall',
-                     '-fno-jump-tables', '-nostdinc', '-mpc-relative-literal-loads', '-mabi=lp64']
-# target optimization to be used for llvm
-TARGET_OPTIMIZATION_FLAGS = ['-O0']
-# debug flags to be used by llvm
-DEBUG_INFO_FLAGS = ['-g']
-ARCH_TARGET = '-target'
-# ARM 32 architecture flag for LLVM
-ARM_32_LLVM_ARCH = 'armv7-a'
-# ARM 64 architecture flag for LLVM
-ARM_64_LLVM_ARCH = 'arm64'
-# flags to disable some llvm warnings
-DISABLE_WARNINGS = ['-Wno-return-type', '-w']
-# flags for architecture
-ARM_32 = 1
-ARM_64 = 2
-EMIT_LLVM_FLAG = '-emit-llvm'
-
-
-def _run_program((workdir, cmd_to_run)):
-    """
-        Run the given program with in the provided directory.
-    :return: None
-    """
-    curr_dir = os.getcwd()
-    os.chdir(workdir)
-    os.system(cmd_to_run)
-    os.chdir(curr_dir)
-
-
-def _is_allowed_flag(curr_flag):
-    """
-        Function which checks, if a gcc flag is allowed in llvm command line.
-    :param curr_flag: flag to include in llvm
-    :return: True/False
-    """
-    # if this is a optimization flag, remove it.
-    if str(curr_flag)[:2] == "-O":
-        return False
-
-    # if the flag is invalid
-    for curr_in_flag in INVALID_GCC_FLAGS:
-        if curr_flag.startswith(curr_in_flag):
-            return False
-
-    return True
-
 
 def _get_llvm_build_str(clang_path, build_args, src_root_dir, target_arch, work_dir,
                         src_file_path, output_file_path, llvm_bit_code_out):
@@ -177,7 +125,7 @@ def _get_llvm_build_str(clang_path, build_args, src_root_dir, target_arch, work_
     curr_output_file = os.path.abspath(os.path.join(curr_output_dir, src_file_name[:-2] + '.llvm.bc'))
 
     for curr_op in build_args:
-        if _is_allowed_flag(curr_op):
+        if is_gcc_flag_allowed(curr_op):
             modified_build_args.append(curr_op)
 
     # tell clang to compile.
@@ -268,7 +216,7 @@ def _process_recursive_linker_commands(linker_commands, kernel_src_dir, llvm_lin
         log_info("Got", len(all_linker_commands), "recursively resolved linker commands.")
         log_info("Running linker commands in multiprocessing mode.")
         p = Pool(cpu_count())
-        return_vals = p.map(_run_program, all_linker_commands)
+        return_vals = p.map(run_program_with_wd, all_linker_commands)
         log_success("Finished running linker commands.")
 
         if len(recursive_linker_commands) > 0:
@@ -317,7 +265,7 @@ def build_drivers(compilation_commands, linker_commands, kernel_src_dir,
     log_info("Got", len(all_compilation_commands), "compilation commands.")
     log_info("Running compilation commands in multiprocessing modea.")
     p = Pool(cpu_count())
-    return_vals = p.map(_run_program, all_compilation_commands)
+    return_vals = p.map(run_program_with_wd, all_compilation_commands)
     log_success("Finished running compilation commands.")
 
     output_llvm_sh_file = os.path.join(llvm_bit_code_out, 'llvm_link_cmds.sh')
@@ -343,7 +291,7 @@ def build_drivers(compilation_commands, linker_commands, kernel_src_dir,
     log_info("Got", len(all_linker_commands), "regular linker commands.")
     log_info("Running linker commands in multiprocessing mode.")
     p = Pool(cpu_count())
-    return_vals = p.map(_run_program, all_linker_commands)
+    return_vals = p.map(run_program_with_wd, all_linker_commands)
     log_success("Finished running linker commands.")
 
     if len(recursive_linker_commands) > 0:

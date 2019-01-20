@@ -25,7 +25,7 @@ def setup_args():
     # parser.add_argument('-c', action='store', dest='clangbin',
     #                    help='Path to the clang executable.')
 
-    parser.add_argument('-g', action='store', dest='compiler_name',
+    parser.add_argument('-g', action='store', dest='compiler_name', default="aarch64-linux-android-gcc",
                         help='Name of the compiler used in the makeout.txt, '
                              'This is needed to filter out compilation commands. Ex: aarch64-linux-android-gcc')
 

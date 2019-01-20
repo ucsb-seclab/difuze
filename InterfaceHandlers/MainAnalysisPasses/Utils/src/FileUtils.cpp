@@ -26,6 +26,15 @@ namespace IOCTL_CHECKER {
                 if(!srcFilePath.compare(0, 2, "./")) {
                     relativePath = srcFilePath.substr(2);
                     is_handled = true;
+                } else {
+                    // this is when the path is relative to the source directory
+                    if(bitCodeDir.back() != '/') {
+                        relativePath = "/";
+                        relativePath.append(srcFilePath);                ;
+                    } else {
+                        relativePath = srcFilePath;
+                    }
+                    is_handled = true;
                 }
             }
         }
