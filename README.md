@@ -183,7 +183,7 @@ bear make -j8 O=out ARCH=arm64
 ```
 cd <repo_path>/helper_scripts
 
-python run_all.py -l ~/mediatek_kernel/llvm_bitcode_out -a 1 -m ~/mediatek_kernel/kernel-3.18/compile_commands.json -n 2 -o ~/mediatek_kernel/kernel-3.18/out -k ~/mediatek_kernel/kernel-3.18 -f ~/mediatek_kernel/ioctl_finder_out
+python run_all.py -l ~/mediatek_kernel/llvm_bitcode_out -a 1 -c ~/mediatek_kernel/kernel-3.18/compile_commands.json -n 2 -o ~/mediatek_kernel/kernel-3.18/out -k ~/mediatek_kernel/kernel-3.18 -f ~/mediatek_kernel/ioctl_finder_out
 ```
 The above command takes quite **some time (30 min - 1hr)**.
 
