@@ -43,6 +43,19 @@ def setup_args():
     parser.add_argument('-k', action='store', dest='kernel_src_dir',
                         help='Base directory of the kernel sources.')
 
+    parser.add_argument('-isclang', action='store_true', dest='is_clang_build',
+                        help='flag to indicate that clang was used to built the kernel')
+
+    parser.add_argument('-clangp', action='store', dest='clang_path',
+                        help='Absolute path to the clang binary (if not provided, the one '
+                             'available in the path will be used)',
+                        default=get_bin_path("clang"))
+
+    parser.add_argument('-llvmlinkp', action='store', dest='llvmlink_path',
+                        help='Absolute path to the llvm-link binary (if not provided, the one '
+                             'available in the path will be used)',
+                        default=get_bin_path("llvm-link"))
+
     parser.add_argument('-skb', action='store_true', dest='skip_llvm_build', default=False,
                         help='Skip LLVM Build (default: not skipped).')
 
@@ -114,11 +127,15 @@ def main():
     arg_dict['chipset_num'] = parsed_args.chipset_num
     arg_dict['makeout'] = parsed_args.makeout
     # arg_dict['clangbin'] = parsed_args.clangbin
-    arg_dict['clangbin'] = get_bin_path('clang')
+    arg_dict['clangbin'] = parsed_args.clang_path
     if parsed_args.compjson is not None:
         comp_json_build = True
         arg_dict['compile_json'] = parsed_args.compjson
-    arg_dict['llvmlinkbin'] = get_bin_path('llvm-link')
+    arg_dict['llvmlinkbin'] = parsed_args.llvmlink_path
+    if parsed_args.is_clang_build:
+        arg_dict['is_clang_build'] = True
+    else:
+        arg_dict['is_clang_build'] = False
     arg_dict['compiler_name'] = parsed_args.compiler_name
     arg_dict['arch_num'] = parsed_args.arch_num
     arg_dict['out'] = parsed_args.out
