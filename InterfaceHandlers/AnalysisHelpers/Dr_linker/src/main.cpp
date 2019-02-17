@@ -13,7 +13,7 @@
 #include "llvm/Analysis/CallGraph.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/SourceMgr.h"
-#include "llvm/Bitcode/ReaderWriter.h"
+#include "llvm/Bitcode/BitcodeReader.h"
 #include "llvm/Analysis/CFGPrinter.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/IR/Module.h"
@@ -1474,12 +1474,12 @@ int main(int argc, char *argv[]) {
         }
         std::cout << "[*] " << " Processing " << "(" << (i+1) << " of " << all_interesting_files.size() << "): "
                   << curr_bc_file << "\n";
-        ErrorOr<std::unique_ptr<llvm::Module>> moduleOrErr = parseBitcodeFile(fileOrErr.get()->getMemBufferRef(), context);
+        Expected<std::unique_ptr<llvm::Module>> moduleOrErr = parseBitcodeFile(fileOrErr.get()->getMemBufferRef(), context);
         std::cout << "[*] " << " Processed " << "(" << (i+1) << " of " << all_interesting_files.size() << "): "
                   << curr_bc_file << "\n";
-        if (std::error_code ec = moduleOrErr.getError())
+        if (!moduleOrErr)
         {
-            std::cerr << "[-] Error reading Module: " + ec.message() << std::endl;
+            std::cerr << "[-] Error reading Module " << src_bin_out << std::endl;
             return 3;
         }
         if (moduleOrErr.get().get() == nullptr)

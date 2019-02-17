@@ -14,7 +14,7 @@
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/SourceMgr.h"
-#include "llvm/Bitcode/ReaderWriter.h"
+#include "llvm/Bitcode/BitcodeReader.h"
 #include "llvm/Analysis/CFGPrinter.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/IR/Module.h"
@@ -523,7 +523,12 @@ int main(int argc, char *argv[]) {
     LLVMContext context;
     ErrorOr<std::unique_ptr<MemoryBuffer>> fileOrErr = MemoryBuffer::getFileOrSTDIN(src_llvm_file);
 
-    ErrorOr<std::unique_ptr<llvm::Module>> moduleOrErr = parseBitcodeFile(fileOrErr.get()->getMemBufferRef(), context);
+    Expected<std::unique_ptr<llvm::Module>> moduleOrErr = parseBitcodeFile(fileOrErr.get()->getMemBufferRef(), context);
+    
+    if (!moduleOrErr) {
+        std::cerr << "[-] Error reading Module " << src_llvm_file << std::endl;
+        return 3;
+    }
 
     Module *m = moduleOrErr.get().get();
 
