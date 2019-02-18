@@ -51,7 +51,6 @@
 #include "llvm/ADT/Statistic.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
-#include "llvm/Support/TimeValue.h"
 #include "llvm/Support/Process.h"
 #include "llvm/Support/FileSystem.h"
 #include <deque>
@@ -578,15 +577,15 @@ public:
 /// and memory footprint. It had been developed before LLVM started
 /// to provide a class for this exact purpose. We'll keep using this
 /// because it works just fine and is well put together.
-class Profile {
+/*class Profile {
 public:
-  class TimeValue : public sys::TimeValue {
+class TimeValue : public std::chrono::high_resolution_clock {
   public:
     // Default constructor
-    TimeValue() : sys::TimeValue(0.0) {}
+    TimeValue() : std::chrono::high_resolution_clock() {}
 
     // Copy constructor related to parent class
-    TimeValue(const sys::TimeValue &from) : sys::TimeValue(0.0) {
+    TimeValue(const std::chrono::high_resolution_clock &from) : std::chrono::high_resolution_clock(0.0) {
       seconds(from.seconds());
       nanoseconds(from.nanoseconds());
     }
@@ -686,13 +685,13 @@ public:
     errs() << formatted.str() << "\t - "
            << "Memory used in KB\n";
   }
-};
+};*/
 
 // The VarNodes type.
 typedef DenseMap<const Value *, VarNode *> VarNodes;
 
 // The Operations type.
-typedef SmallPtrSet<BasicOp *, 64> GenOprs;
+typedef DenseSet<BasicOp *> GenOprs;
 
 // A map from variables to the operations where these variables are used.
 typedef DenseMap<const Value *, SmallPtrSet<BasicOp *, 8>> UseMap;

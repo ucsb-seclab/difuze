@@ -2205,7 +2205,9 @@ void ConstraintGraph::buildValueSwitchMap(const SwitchInst *sw) {
     if (CI == sw->case_default())
       continue;
 
-    const ConstantInt *constant = CI.getCaseValue();
+
+
+    const ConstantInt *constant = (*CI).getCaseValue();
 
     APInt sigMin = constant->getValue();
     APInt sigMax = sigMin;

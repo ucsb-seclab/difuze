@@ -121,7 +121,7 @@ namespace IOCTL_CHECKER {
         // Limit the number of blocks we visit. The goal is to avoid run-away compile
         // times on large CFGs without hampering sensible code. Arbitrarily chosen.
         unsigned Limit = 32;
-        SmallSet<const BasicBlock*, 64> Visited;
+        DenseSet<const BasicBlock*> Visited;
         do {
             BasicBlock *BB = Worklist.pop_back_val();
             if (!Visited.insert(BB).second)

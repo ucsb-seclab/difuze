@@ -22,7 +22,7 @@ STATISTIC(numsigmas, "Number of sigmas");
 STATISTIC(numphis, "Number of phis");
 
 void vSSA::getAnalysisUsage(AnalysisUsage &AU) const {
-	AU.addRequired<DominanceFrontier>();
+	//AU.addRequired<DominanceFrontier>();
 	AU.addRequired<DominatorTreeWrapperPass>();
 }
 
@@ -36,7 +36,8 @@ bool vSSA::runOnFunction(Function &F) {
 	
 	DTw_ = &getAnalysis<DominatorTreeWrapperPass>();
 	DT_ = &DTw_->getDomTree();
-	DF_ = &getAnalysis<DominanceFrontier>();
+	DF_ = new DominanceFrontier();
+	DF_->analyze(*DT_);
 	
 	// Iterate over all Basic Blocks of the Function, calling the function that creates sigma functions, if needed
 	for (Function::iterator Fit = F.begin(), Fend = F.end(); Fit != Fend; ++Fit) {

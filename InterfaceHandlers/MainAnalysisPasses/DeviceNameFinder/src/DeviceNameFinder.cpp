@@ -110,11 +110,12 @@ namespace IOCTL_CHECKER {
             //dbgs() <<"dada:" << *currVal << "\n";
             Instruction *currInst = dyn_cast<Instruction>(currVal);
             if (currInst == nullptr) {
-                for (auto &a:targetFunction->getArgumentList()) {
-                    if (&a == currVal) {
-                        return &a;
+                for(auto ai=targetFunction->arg_begin(), ae=targetFunction->arg_end(); ai != ae; ai++) {
+                    if(&(*ai) == currVal) {
+                        return &(*ai);
                     }
                 }
+
             } else {
 
                 for (unsigned int i = 0; i < currInst->getNumOperands(); i++) {

@@ -143,7 +143,7 @@ namespace IOCTL_CHECKER {
         if(this->backTrackUserType(targetSwitchCond, resultSpacing)) {
             dbgs() << resultSpacing << "POSSIBLE VALUES (" << I.getNumCases() << ")\n";
             for(auto cis=I.case_begin(), cie=I.case_end(); cis != cie; cis++) {
-                ConstantInt *cmdVal = cis.getCaseValue();
+                ConstantInt *cmdVal = (*cis).getCaseValue();
                 // start the print
                 dbgs() << resultSpacing << "Value:" << cmdVal->getValue().getZExtValue() << "\n";
             }

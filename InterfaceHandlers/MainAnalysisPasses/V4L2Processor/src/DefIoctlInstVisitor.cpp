@@ -91,8 +91,8 @@ namespace IOCTL_CHECKER {
         std::set<BasicBlock*> visitedInThisIteration;
         if(this->isCmdAffected(targetSwitchCond)) {
             for(auto cis=targetSwitchInst->case_begin(), cie=targetSwitchInst->case_end(); cis != cie; cis++) {
-                ConstantInt *cmdVal = cis.getCaseValue();
-                BasicBlock *caseStartBB = cis.getCaseSuccessor();
+                ConstantInt *cmdVal = (*cis).getCaseValue();
+                BasicBlock *caseStartBB = (*cis).getCaseSuccessor();
                 std::set<BasicBlock*> visitedBBs;
                 visitedBBs.clear();
                 // start the print
