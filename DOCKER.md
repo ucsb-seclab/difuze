@@ -1,6 +1,6 @@
 # Running difuze from docker
 ______
-The docker image `machiry/difuzecommon` contains the difuze sources (at `/difuze/repo`) along with all the dependencies installed.
+The docker images `machiry/difuzecommon` and `machiry/difuze60` (for LLVM 6.0) contains the difuze sources (at `/difuze/repo`) along with all the dependencies installed.
 ## Install Docker
 ```
 sudo apt-get install -y docker.io
