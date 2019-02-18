@@ -75,7 +75,7 @@ def _run_dev_name_finder(combined_arg):
                   ", So the output you get may be wrong.")
 
     # Old ioctl cmd parser
-    ret_val = os.system(opt_bin_path + " -analyze -debug -load " + so_path + ' -dev-name-finder -ioctlFunction=\"' +
+    ret_val = os.system("timeout 15m " + opt_bin_path + " -analyze -debug -load " + so_path + ' -dev-name-finder -ioctlFunction=\"' +
                         str(func_name) + '\" ' + bc_file_name + ' >> ' + output_file + ' 2>&1')
     return ret_val, func_name
 

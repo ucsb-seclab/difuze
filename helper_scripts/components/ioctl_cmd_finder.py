@@ -123,7 +123,7 @@ def _run_ioctl_cmd_parser(combined_arg):
     # Old ioctl cmd parser
     '''ret_val = os.system(opt_bin_path + " -analyze -debug -load " + so_path + ' -ioctl-cmd-parser -toCheckFunction=\"' +
                         str(func_name) + '\" ' + bc_file_name + ' > ' + output_file + ' 2>&1')'''
-    ret_val = os.system(opt_bin_path + " -analyze -debug -load " + so_path + ' -new-ioctl-cmd-parser -ioctlFunction=\"' +
+    ret_val = os.system("timeout 15m " + opt_bin_path + " -analyze -debug -load " + so_path + ' -new-ioctl-cmd-parser -ioctlFunction=\"' +
                         str(func_name) + '\" -bcOutDir=\"' + llvm_bc_out + '\" -srcBaseDir=\"' + kernel_src_dir + '\" ' +
                         bc_file_name + ' >> ' + output_file + ' 2>&1')
     return ret_val, func_name
