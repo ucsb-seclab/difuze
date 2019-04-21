@@ -33,7 +33,7 @@ usage: setup_difuze.py [-h] [-b TARGET_BRANCH] [-o OUTPUT_FOLDER]
 optional arguments:
   -h, --help        show this help message and exit
   -b TARGET_BRANCH  Branch (i.e. version) of the LLVM to setup. Default:
-                    release_38 e.g., release_38
+                    release_60 e.g., release_60
   -o OUTPUT_FOLDER  Folder where everything needs to be setup.
 
 ```
