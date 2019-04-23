@@ -109,6 +109,10 @@ namespace IOCTL_CHECKER {
 
             // if this is not a call instruction.
             if(!dyn_cast<CallInst>(&I) && !dyn_cast<PHINode>(&I)) {
+                Value *storePtrArg = nullptr;
+                if(dyn_cast<StoreInst>(&I)) {
+                    storePtrArg = dyn_cast<StoreInst>(&I)->getPointerOperand()->stripPointerCasts();
+                }
                 for (unsigned int i = 0; i < I.getNumOperands(); i++) {
                     Value *currValue = I.getOperand(i);
                     if (currValue != nullptr) {
@@ -119,12 +123,23 @@ namespace IOCTL_CHECKER {
                             if (allCmdInstrs.find(&I) == allCmdInstrs.end()) {
                                 allCmdInstrs.insert(&I);
                             }
+                            if(storePtrArg != nullptr) {
+                                if (allCmdInstrs.find(storePtrArg) == allCmdInstrs.end()) {
+                                    allCmdInstrs.insert(storePtrArg);
+                                }
+                            }
                         }
                         if (allArgInstrs.find(currValue) != allArgInstrs.end() ||
                             allArgInstrs.find(strippedValue) != allArgInstrs.end()) {
                             // only insert if this instruction is not present.
                             if (allArgInstrs.find(&I) == allArgInstrs.end()) {
                                 allArgInstrs.insert(&I);
+                            }
+                            
+                            if(storePtrArg != nullptr) {
+                                if (allArgInstrs.find(storePtrArg) == allArgInstrs.end()) {
+                                    allArgInstrs.insert(storePtrArg);
+                                }
                             }
                         }
 
