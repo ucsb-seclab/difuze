@@ -236,8 +236,8 @@ namespace IOCTL_CHECKER {
                         // only consider value arguments.
                         if(!this->isArgAffected(srcOperand)) {
                             dbgs() << "Found a copy from user from non-user argument\n";
-                            srcOperand = nullptr;
-                            targetOperand = nullptr;
+                            //srcOperand = nullptr;
+                            //targetOperand = nullptr;
                         }
                     }
                     if(targetOperand != nullptr) {
