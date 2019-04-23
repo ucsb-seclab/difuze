@@ -108,7 +108,7 @@ namespace IOCTL_CHECKER {
 #endif
 
             // if this is not a call instruction.
-            if(!dyn_cast<CallInst>(&I) && !dyn_cast<PHINode>(&I)) {
+            if(!dyn_cast<CallInst>(&I) /*&& !dyn_cast<PHINode>(&I)*/) {
                 Value *storePtrArg = nullptr;
                 if(dyn_cast<StoreInst>(&I)) {
                     storePtrArg = dyn_cast<StoreInst>(&I)->getPointerOperand()->stripPointerCasts();

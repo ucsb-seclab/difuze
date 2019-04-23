@@ -153,6 +153,11 @@ def get_pre_procs(lines):
     to_ret.extend(additional_pre_procs)
     return to_ret
     
+def get_ioctl_name_line(all_lines):
+    for curr_l in  all_lines:
+        if "Provided Function Name" in  curr_l:
+            return curr_l
+    return None
 
 def algo(fname):
     records = []
@@ -168,7 +173,9 @@ def algo(fname):
     f.close()
     lines = data.splitlines()
     print '[+] Running on file %s' % fname
-    name_line = lines[1]
+    name_line = get_ioctl_name_line(lines)
+    if name_line is None:
+        name_line = lines[1]
     ioctl_name = name_line[name_line.find(': ')+2::]
     print '[+] ioctl name: %s' % ioctl_name
 
