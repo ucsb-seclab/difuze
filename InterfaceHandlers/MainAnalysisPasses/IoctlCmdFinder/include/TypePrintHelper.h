@@ -26,6 +26,8 @@ namespace IOCTL_CHECKER {
         static void setFoldersPath(string &srcKDir, string &lbcfile);
         static Type* typeOutputHandler(Value *targetVal, llvm::raw_ostream &to_out, IOInstVisitor *currFunction);
         static void addRequiredFile(Instruction *currInstruction);
+
+        static Type* getInstructionTypeRecursive(Value *currInstr, std::set<Instruction*> &visited);
     };
 }
 
