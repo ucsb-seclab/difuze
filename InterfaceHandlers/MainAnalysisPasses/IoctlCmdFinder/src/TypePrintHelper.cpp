@@ -135,7 +135,19 @@ namespace IOCTL_CHECKER {
                     printType(targetType, to_out);
                 }
             } else {
-                to_out << " no TYPE for:" << *targetVal << "\n";
+                if(dyn_cast<Instruction>(targetVal)) {
+                    std::set<Instruction*> visitedInstr;
+                    visitedInstr.clear();
+                    targetType = TypePrintHelper::getInstructionTypeRecursive(targetVal, visitedInstr);
+                    if(targetType != nullptr) {
+                        TypePrintHelper::addRequiredFile(dyn_cast<Instruction>(targetVal));
+                        printType(targetType, to_out);
+                    } else {
+                        to_out << " no TYPE for:" << *targetVal << "\n";
+                    }
+                } else {
+                    to_out << " no TYPE for:" << *targetVal << "\n";
+                }
             }
             retType = targetType;
         } else {
@@ -150,11 +162,78 @@ namespace IOCTL_CHECKER {
                 }
             } else {
 
-                to_out << " no TYPE for:" << *targetVal << "\n";
+                if(dyn_cast<Instruction>(targetVal)) {
+                    std::set<Instruction*> visitedInstr;
+                    visitedInstr.clear();
+                    targetType = TypePrintHelper::getInstructionTypeRecursive(targetVal, visitedInstr);
+                    if(targetType != nullptr) {
+                        TypePrintHelper::addRequiredFile(dyn_cast<Instruction>(targetVal));
+                        printType(targetType, to_out);
+                    } else {
+                        to_out << " no TYPE for:" << *targetVal << "\n";
+                    }
+                } else {
+                    to_out << " no TYPE for:" << *targetVal << "\n";
+                }
             }
             retType = targetType;
         }
 
         return retType;
+    }
+
+    Type* TypePrintHelper::getInstructionTypeRecursive(Value *currValue, std::set<Instruction*> &visited) {
+        Instruction *currInstr = dyn_cast<Instruction>(currValue);
+        if(currInstr != nullptr) {
+            if (visited.find(currInstr) == visited.end()) {
+                visited.insert(currInstr);
+                if (dyn_cast<LoadInst>(currInstr)) {
+                    LoadInst *currLI = dyn_cast<LoadInst>(currInstr);
+                    Value *poiterVal = currLI->getPointerOperand()->stripPointerCasts();
+                    for(auto u: poiterVal->users()) {
+                        Value *tmpVal = dyn_cast<Value>(u);
+                        if(dyn_cast<StoreInst>(tmpVal)) {
+                            Type *currChType = TypePrintHelper::getInstructionTypeRecursive(tmpVal, visited);
+                            if(currChType) {
+                                return currChType;
+                            }
+                        }
+                    }
+                }
+                if (dyn_cast<StoreInst>(currInstr)) {
+                    StoreInst *currSI = dyn_cast<StoreInst>(currInstr);
+                    Value *valueOp = currSI->getValueOperand();
+                    if(dyn_cast<Instruction>(valueOp)) {
+                        Type *currChType = TypePrintHelper::getInstructionTypeRecursive(valueOp, visited);
+                        if(currChType) {
+                            return currChType;
+                        }
+                    }
+                }
+                if (dyn_cast<BitCastInst>(currInstr)) {
+                    BitCastInst *currBCI = dyn_cast<BitCastInst>(currInstr);
+                    return currBCI->getSrcTy();
+                }
+                if (dyn_cast<PHINode>(currInstr)) {
+                    PHINode *currPN = dyn_cast<PHINode>(currInstr);
+                    unsigned i = 0;
+                    while(i < currPN->getNumOperands()) {
+                        Value *targetOp = currPN->getOperand(i);
+                        Type *currChType = TypePrintHelper::getInstructionTypeRecursive(targetOp, visited);
+                        if(currChType) {
+                            return currChType;
+                        }
+                        i++;
+                    }
+                }
+                if (dyn_cast<AllocaInst>(currInstr)) {
+                    AllocaInst *currAI = dyn_cast<AllocaInst>(currInstr);
+                    return currAI->getType();
+                }
+                visited.erase(currInstr);
+
+            }
+        }
+        return nullptr;
     }
 }
