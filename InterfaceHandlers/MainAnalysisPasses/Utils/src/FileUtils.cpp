@@ -42,6 +42,10 @@ namespace IOCTL_CHECKER {
         std::string to_ret = "";
         if(is_handled) {
             to_ret = bitCodeDir;
+            // handle missing path separator
+            if(*(bitCodeDir.end()) != '/' && *(relativePath.begin()) != '/') {
+                to_ret.append("/");
+            }
             to_ret.append(relativePath.substr(0, relativePath.length() - 2));
             to_ret.append(suffix);
         }
