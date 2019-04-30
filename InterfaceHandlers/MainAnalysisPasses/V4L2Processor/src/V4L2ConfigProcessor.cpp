@@ -123,12 +123,11 @@ namespace IOCTL_CHECKER {
                         //dbgs() << "Init:" << *baseInitializer << "\n";
                         //dbgs() << "Type:" << *initType << "\n";
                         //assert(initType->isStructTy());
+                        ConstantArray *currAr = dyn_cast<ConstantArray>(baseInitializer);
 
-
-                        ConstantStruct *actualStType = dyn_cast<ConstantStruct>(baseInitializer);
-                        if(actualStType != nullptr) {
-                            for (unsigned int i = 0; i < actualStType->getNumOperands(); i++) {
-                                Value *currFieldVal = actualStType->getOperand(i);
+                        if(currAr != nullptr) {
+                            for (unsigned int i = 0; i < currAr->getNumOperands(); i++) {
+                                Value *currFieldVal = currAr->getOperand(i);
                                 Constant *constCheck = dyn_cast<Constant>(currFieldVal);
                                 Type *currValType = constCheck->getType();
                                 assert(currValType->isStructTy());
@@ -141,10 +140,9 @@ namespace IOCTL_CHECKER {
                                 if(structVal != nullptr) {
                                     ConstantInt *cmdId = dyn_cast<ConstantInt>(structVal->getOperand(0));
                                     //dbgs() << cmdId->getZExtValue() << "\n";
-                                    ConstantStruct *cmdFunc = dyn_cast<ConstantStruct>(structVal->getOperand(3));
+                                    Function *targetFunc = dyn_cast<Function>(structVal->getOperand(3));
                                     //dbgs() << *cmdFunc << "\n";
-                                    Constant *targetInit = cmdFunc->getOperand(0);
-                                    Function *targetFunc = dyn_cast<Function>(targetInit);
+                                    Constant *targetInit = structVal->getOperand(1);
                                     if(targetFunc != nullptr) {
                                         //dbgs() << "Target Func:" << targetFunc->getName() << "\n";
                                         string targetFuncName = targetFunc->getName();
