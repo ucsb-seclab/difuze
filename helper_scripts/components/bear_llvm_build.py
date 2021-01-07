@@ -131,7 +131,7 @@ def _get_llvm_build_str(clang_path, build_args, src_root_dir, target_arch, work_
 
     for curr_op in build_args:
         if is_gcc_flag_allowed(curr_op):
-            modified_build_args.append(curr_op)
+            modified_build_args.append(escape_compile_option(curr_op))
 
     # tell clang to compile.
     modified_build_args.append("-c")
@@ -193,7 +193,7 @@ def _get_llvm_build_str_from_llvm(clang_path, build_args,
     for curr_op in build_args:
         # ignore only optimization flags.
         if str(curr_op)[:2] != "-O":
-            modified_build_args.append(curr_op)
+            modified_build_args.append(escape_compile_option(curr_op))
 
     # tell clang to compile.
     modified_build_args.append("-c")

@@ -1,6 +1,7 @@
 from base_component import *
 import os
 from multiprocessing import Pool, cpu_count
+from bear_build_helper import escape_compile_option
 
 
 class GeneratePreprocessed(Component):
@@ -205,7 +206,7 @@ def _get_llvm_build_str(src_root_dir, gcc_build_string, output_folder, target_ar
 
     for curr_op in orig_build_args:
         if _is_allowed_flag(curr_op):
-            modified_build_args.append(curr_op)
+            modified_build_args.append(escape_compile_option(curr_op))
 
     return ' '.join(modified_build_args)
 

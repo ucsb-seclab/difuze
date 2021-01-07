@@ -52,3 +52,13 @@ def is_gcc_flag_allowed(curr_flag):
             return False
 
     return True
+
+def escape_compile_option(comp_flag):
+    """
+      Shell escape special charecters.
+    :param comp_flag: input compiler flag.
+    :return: Escaped flag.
+    """
+    comp_flag = comp_flag.replace("(", "\(")
+    comp_flag = comp_flag.replace(")", "\)")
+    return comp_flag

@@ -128,7 +128,7 @@ def _get_llvm_preprocessing_str(clang_path, build_args, src_root_dir, target_arc
 
     for curr_op in build_args:
         if is_gcc_flag_allowed(curr_op):
-            modified_build_args.append(curr_op)
+            modified_build_args.append(escape_compile_option(curr_op))
 
     # tell clang to compile.
     modified_build_args.append("-c")
