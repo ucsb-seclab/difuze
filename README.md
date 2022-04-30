@@ -172,7 +172,7 @@ To skip: `-ski`
 ### 1.4 Example:
 Now, we will show an example from the point where you have kernel sources to the point of getting Interface Recovery results.
 
-We have uploaded a mediatek kernel [33.2.A.3.123.tar.bz2](https://drive.google.com/open?id=0B4XwT5D6qkNmLXdNTk93MjU3SWM). 
+We have uploaded a mediatek kernel [33.2.A.3.123.tar.bz2](https://drive.google.com/file/d/0B4XwT5D6qkNmLXdNTk93MjU3SWM/view?usp=sharing&resourcekey=0-cb1ceDme5Fi2xugS7nYl7w). 
 First download and extract the above file.
 
 Lets say you extracted the above file in a folder called: `~/mediatek_kernel`
